@@ -9,7 +9,9 @@ function makeBoard(size) {
 
   function placeTile(x, y, value) {
     if (tiles[y * size + x] === "") tiles[y * size + x] = value;
-    return checkWin(x, y, value);
+    const result = checkWin(x, y, value);
+    if (result) console.log("WIN");
+    return result;
   }
 
   function checkWin(xPos, yPos, symbol) {
@@ -48,12 +50,16 @@ function makeBoard(size) {
   return { tiles, placeTile, printBoard, length, size };
 }
 
+const app = (function () {
+  const main = document.getElementById("main");
+
+  let mySafeVar = 3;
+
+  function logVar() {
+    console.log(mySafeVar);
+  }
+
+  return { logVar };
+})();
+
 const board = makeBoard(3);
-
-board.placeTile(0, 1, "X");
-board.placeTile(1, 1, "X");
-board.placeTile(2, 1, "X");
-board.placeTile(0, 0, "X");
-board.placeTile(2, 2, "X");
-
-board.printBoard();
