@@ -5,15 +5,25 @@ html {
 #main {
   width: 100px;
   height: 100px;
-  background-color: black;
+  background-color: rgb(109, 109, 109);
+  display: grid;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+#content {
+  width: 100px;
+  height: 100px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-items: center;
   align-items: center;
+}
+
+#restart-button {
+  justify-content: center;
 }
 
 .tile {
@@ -28,4 +38,8 @@ html {
 
 .tile:hover {
   opacity: 95%;
+}
+
+.hidden {
+  visibility: hidden;
 }

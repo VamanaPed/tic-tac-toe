@@ -71,11 +71,16 @@ function makeBoard(size, winLength = size) {
     }
   }
 
+  function gameOver() {
+    return gameFinished;
+  }
+
   return {
     tiles,
     placeTile,
     placeTileAlternating,
     printBoard,
+    gameOver,
     length,
     size,
   };
@@ -83,8 +88,9 @@ function makeBoard(size, winLength = size) {
 
 const app = (function () {
   const main = document.getElementById("main");
+  const content = document.getElementById("content");
 
-  function makeTiles(size, callback) {
+  function makeTiles(size, callback, board, gameOverCallback) {
     let string = "";
     for (let x = 0; x < size; x++) {
       for (let y = 0; y < size; y++) {
@@ -93,15 +99,18 @@ const app = (function () {
         tile.onclick = () => {
           const result = callback(y, x);
           if (result != undefined) tile.textContent = result;
+          if (board.gameOver()) gameOverCallback();
         };
-        main.appendChild(tile);
+        content.appendChild(tile);
       }
       string += " 1fr";
     }
 
-    main.style.gridTemplateColumns = string;
-    main.style.height = `${size * 61}px`;
-    main.style.width = `${size * 61}px`;
+    content.style.gridTemplateColumns = string;
+    content.style.height = `${size * 62}px`;
+    content.style.width = `${size * 62}px`;
+    main.style.height = `${size * 62}px`;
+    main.style.width = `${size * 62}px`;
   }
 
   return { makeTiles };
@@ -111,10 +120,22 @@ const app = (function () {
 const boardSizeInput = document.getElementById("size");
 const rowLengthInput = document.getElementById("length");
 
+const restartButton = document.getElementById("restart-button");
+
+function showRestartButton() {
+  restartButton.classList.remove("hidden");
+}
+
 function resetBoard() {
-  main.textContent = "";
+  content.textContent = "";
   const board = makeBoard(boardSizeInput.value, rowLengthInput.value);
-  app.makeTiles(board.size, board.placeTileAlternating);
+  app.makeTiles(
+    board.size,
+    board.placeTileAlternating,
+    board,
+    showRestartButton
+  );
+  restartButton.classList.add("hidden");
 }
 
 resetBoard(3);
