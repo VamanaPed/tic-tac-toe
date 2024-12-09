@@ -13,6 +13,7 @@ function makeBoard(size) {
   function placeTile(x, y, value) {
     if (gameFinished) return;
     if (tiles[y * size + x] === "") tiles[y * size + x] = value;
+    else return tiles[y * size + x];
     gameFinished = checkWin(x, y, value);
 
     return value;
@@ -20,13 +21,9 @@ function makeBoard(size) {
 
   function placeTileAlternating(x, y) {
     if (gameFinished) return;
-    let value = xTurn ? "X" : "O";
-    if (tiles[y * size + x] === "") tiles[y * size + x] = value;
-    gameFinished = checkWin(x, y, value);
-
+    const result = placeTile(x, y, xTurn ? "X" : "O");
     xTurn = !xTurn;
-
-    return !xTurn ? "X" : "O";
+    return result;
   }
 
   function checkWin(xPos, yPos, symbol) {
@@ -91,6 +88,11 @@ const app = (function () {
   return { makeTiles };
 })();
 
-const board = makeBoard(3);
+function resetBoard(size) {
+  main.textContent = "";
+  const board = makeBoard(size);
+  app.makeTiles(board.size, board.placeTileAlternating);
+}
 
-app.makeTiles(board.size, board.placeTileAlternating);
+// Start of app
+resetBoard(3);
