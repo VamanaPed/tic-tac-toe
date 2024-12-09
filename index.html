@@ -8,15 +8,25 @@
   </head>
   <body>
     <div id="main"></div>
-    <label for="quantity">Quantity (between 2 and 5):</label>
+    <label for="size">Size (between 2 and 8):</label>
     <input
       type="number"
-      id="quantity"
-      name="quantity"
+      id="size"
+      name="size"
       min="2"
-      max="5"
+      max="8"
       value="3"
-      onchange="resetBoard(this.value)"
+      onchange="resetBoard()"
+    />
+    <label for="length">Win length size (between 2 and 8):</label>
+    <input
+      type="number"
+      id="length"
+      name="length"
+      min="2"
+      max="8"
+      value="3"
+      onchange="resetBoard()"
     />
     <script src="script.js"></script>
   </body>

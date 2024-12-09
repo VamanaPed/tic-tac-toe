@@ -1,4 +1,4 @@
-function makeBoard(size) {
+function makeBoard(size, winLength = size) {
   let tiles = [];
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
@@ -15,7 +15,6 @@ function makeBoard(size) {
     if (tiles[y * size + x] === "") tiles[y * size + x] = value;
     else return tiles[y * size + x];
     gameFinished = checkWin(x, y, value);
-
     return value;
   }
 
@@ -27,23 +26,36 @@ function makeBoard(size) {
   }
 
   function checkWin(xPos, yPos, symbol) {
+    let tally = 0;
     for (let x = 0; x < size; x++) {
-      if (tiles[yPos * size + x] !== symbol) break;
-      if (x == size - 1) return true;
+      if (tiles[yPos * size + x] === symbol) {
+        tally++;
+      } else tally = 0;
+      if (tally >= winLength) return true;
     }
 
+    tally = 0;
     for (let y = 0; y < size; y++) {
-      if (tiles[y * size + xPos] !== symbol) break;
-      if (y == size - 1) return true;
-    }
-    for (let i = 0; i < size; i++) {
-      if (tiles[i * size + i] !== symbol) break;
-      if (i == size - 1) return true;
+      if (tiles[y * size + xPos] === symbol) {
+        tally++;
+      } else tally = 0;
+      if (tally >= winLength) return true;
     }
 
+    tally = 0;
     for (let i = 0; i < size; i++) {
-      if (tiles[(size - 1 - i) * size + i] !== symbol) break;
-      if (i == size - 1) return true;
+      if (tiles[i * size + i] === symbol) {
+        tally++;
+      } else tally = 0;
+      if (tally >= winLength) return true;
+    }
+
+    tally = 0;
+    for (let i = 0; i < size; i++) {
+      if (tiles[(size - 1 - i) * size + i] === symbol) {
+        tally++;
+      } else tally = 0;
+      if (tally >= winLength) return true;
     }
   }
 
@@ -59,7 +71,14 @@ function makeBoard(size) {
     }
   }
 
-  return { tiles, placeTile, placeTileAlternating, printBoard, length, size };
+  return {
+    tiles,
+    placeTile,
+    placeTileAlternating,
+    printBoard,
+    length,
+    size,
+  };
 }
 
 const app = (function () {
@@ -73,7 +92,7 @@ const app = (function () {
         tile.classList.add("tile");
         tile.onclick = () => {
           const result = callback(y, x);
-          tile.textContent = result;
+          if (result != undefined) tile.textContent = result;
         };
         main.appendChild(tile);
       }
@@ -88,11 +107,14 @@ const app = (function () {
   return { makeTiles };
 })();
 
-function resetBoard(size) {
+// Start of app
+const boardSizeInput = document.getElementById("size");
+const rowLengthInput = document.getElementById("length");
+
+function resetBoard() {
   main.textContent = "";
-  const board = makeBoard(size);
+  const board = makeBoard(boardSizeInput.value, rowLengthInput.value);
   app.makeTiles(board.size, board.placeTileAlternating);
 }
 
-// Start of app
 resetBoard(3);
