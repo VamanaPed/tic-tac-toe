@@ -7,11 +7,26 @@ function makeBoard(size) {
   }
   const length = size * size;
 
+  let xTurn = true;
+  let gameFinished = false;
+
   function placeTile(x, y, value) {
+    if (gameFinished) return;
     if (tiles[y * size + x] === "") tiles[y * size + x] = value;
-    const result = checkWin(x, y, value);
-    if (result) console.log("WIN");
-    return result;
+    gameFinished = checkWin(x, y, value);
+
+    return value;
+  }
+
+  function placeTileAlternating(x, y) {
+    if (gameFinished) return;
+    let value = xTurn ? "X" : "O";
+    if (tiles[y * size + x] === "") tiles[y * size + x] = value;
+    gameFinished = checkWin(x, y, value);
+
+    xTurn = !xTurn;
+
+    return !xTurn ? "X" : "O";
   }
 
   function checkWin(xPos, yPos, symbol) {
@@ -47,19 +62,35 @@ function makeBoard(size) {
     }
   }
 
-  return { tiles, placeTile, printBoard, length, size };
+  return { tiles, placeTile, placeTileAlternating, printBoard, length, size };
 }
 
 const app = (function () {
   const main = document.getElementById("main");
 
-  let mySafeVar = 3;
+  function makeTiles(size, callback) {
+    let string = "";
+    for (let x = 0; x < size; x++) {
+      for (let y = 0; y < size; y++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.onclick = () => {
+          const result = callback(y, x);
+          tile.textContent = result;
+        };
+        main.appendChild(tile);
+      }
+      string += " 1fr";
+    }
 
-  function logVar() {
-    console.log(mySafeVar);
+    main.style.gridTemplateColumns = string;
+    main.style.height = `${size * 61}px`;
+    main.style.width = `${size * 61}px`;
   }
 
-  return { logVar };
+  return { makeTiles };
 })();
 
 const board = makeBoard(3);
+
+app.makeTiles(board.size, board.placeTileAlternating);
