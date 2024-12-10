@@ -9,18 +9,21 @@ function makeBoard(size, winLength = size) {
 
   let xTurn = true;
   let gameFinished = false;
+  let moveCount = 0;
 
   function placeTile(x, y, value) {
     if (gameFinished) return;
     if (tiles[y * size + x] === "") tiles[y * size + x] = value;
-    else return tiles[y * size + x];
+    else return undefined;
     gameFinished = checkWin(x, y, value);
+    moveCount++;
     return value;
   }
 
   function placeTileAlternating(x, y) {
     if (gameFinished) return;
     const result = placeTile(x, y, xTurn ? "X" : "O");
+    if (result === undefined) return undefined;
     xTurn = !xTurn;
     return result;
   }
@@ -75,12 +78,17 @@ function makeBoard(size, winLength = size) {
     return gameFinished;
   }
 
+  function gameStuck() {
+    return moveCount >= size * size - size;
+  }
+
   return {
     tiles,
     placeTile,
     placeTileAlternating,
     printBoard,
     gameOver,
+    gameStuck,
     length,
     size,
   };
@@ -90,16 +98,25 @@ const app = (function () {
   const main = document.getElementById("main");
   const content = document.getElementById("content");
 
-  function makeTiles(size, callback, board, gameOverCallback) {
+  function makeTiles(
+    size,
+    placeTileCallback,
+    board,
+    gameOverCallback,
+    gameStuckCallback
+  ) {
     let string = "";
     for (let x = 0; x < size; x++) {
       for (let y = 0; y < size; y++) {
         const tile = document.createElement("div");
         tile.classList.add("tile");
         tile.onclick = () => {
-          const result = callback(y, x);
-          if (result != undefined) tile.textContent = result;
-          if (board.gameOver()) gameOverCallback();
+          const result = placeTileCallback(y, x);
+          if (result !== undefined) {
+            tile.textContent = result;
+            if (board.gameOver()) gameOverCallback(result);
+            else if (board.gameStuck()) gameStuckCallback();
+          }
         };
         content.appendChild(tile);
       }
@@ -120,9 +137,18 @@ const app = (function () {
 const boardSizeInput = document.getElementById("size");
 const rowLengthInput = document.getElementById("length");
 
+const message = document.getElementById("message");
 const restartButton = document.getElementById("restart-button");
 
-function showRestartButton() {
+function showGameOver(winner) {
+  message.textContent = winner + " Wins";
+  message.classList.remove("hidden");
+  restartButton.classList.remove("hidden");
+}
+
+function showRestartGame() {
+  message.textContent = "Restart?";
+  message.classList.remove("hidden");
   restartButton.classList.remove("hidden");
 }
 
@@ -133,8 +159,11 @@ function resetBoard() {
     board.size,
     board.placeTileAlternating,
     board,
-    showRestartButton
+    showGameOver,
+    showRestartGame
   );
+
+  message.classList.add("hidden");
   restartButton.classList.add("hidden");
 }
 
