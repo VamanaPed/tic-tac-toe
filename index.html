@@ -13,26 +13,34 @@
       <button id="restart-button" onclick="resetBoard()">New Game</button>
     </div>
 
-    <label for="size">Size (between 2 and 8):</label>
-    <input
-      type="number"
-      id="size"
-      name="size"
-      min="2"
-      max="8"
-      value="3"
-      onchange="resetBoard()"
-    />
-    <label for="length">Win length size (between 2 and 8):</label>
-    <input
-      type="number"
-      id="length"
-      name="length"
-      min="2"
-      max="8"
-      value="3"
-      onchange="resetBoard()"
-    />
+    <div id="top-bar">
+      <div>
+        <label for="size">Board Size:</label>
+        <input
+          type="number"
+          id="size"
+          name="size"
+          min="2"
+          max="8"
+          value="3"
+          onchange="resetBoard()"
+        />
+      </div>
+      <h1 id="title">Tic-tac-toe</h1>
+      <div>
+        <label for="length">Win Condition:</label>
+        <input
+          type="number"
+          id="length"
+          name="length"
+          min="2"
+          max="8"
+          value="3"
+          onchange="resetBoard()"
+        />
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
